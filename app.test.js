@@ -1,5 +1,4 @@
 // set NODE_ENV to test to prevent stacktrace from showing
-// process.env.NODE_ENV = "test";
 
 // supertest is a library that allows us to test our express app
 const request = require("supertest");
