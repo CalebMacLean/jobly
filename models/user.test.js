@@ -1,4 +1,6 @@
 "use strict";
+// set test environment
+process.env.NODE_ENV = "test";
 
 const {
   NotFoundError,
