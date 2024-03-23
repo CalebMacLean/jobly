@@ -140,6 +140,57 @@ class Company {
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
   }
+
+  /** Filter companies by name and/or minEmployees and/or maxEmployees.
+   *
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * */
+  static async filter(filters) {
+    // create base query
+    let query = `SELECT handle,
+                        name,
+                        description,
+                        num_employees AS "numEmployees",
+                        logo_url AS "logoUrl"
+                 FROM companies`;
+    // create storage vars for query expressions and values
+    let whereExpressions = [];
+    let queryValues = [];
+    // destructure filters
+    const { name, minEmployees, maxEmployees } = filters;
+    
+    // check for valid filters and add to query
+    // if name is defined, add to whereExpressions and queryValues
+    if (name !== undefined) {
+      queryValues.push(`%${name}%`);
+      // ILIKE is a case-insensitive version of LIKE
+      whereExpressions.push(`name ILIKE $${queryValues.length}`);
+    }
+
+    // if minEmployees is defined, add to whereExpressions and queryValues
+    if (minEmployees !== undefined) {
+      queryValues.push(minEmployees);
+      // num_employees is the column name in the database
+      whereExpressions.push(`num_employees >= $${queryValues.length}`);
+    }
+
+    // if maxEmployees is defined, add to whereExpressions and queryValues
+    if (maxEmployees !== undefined) {
+      queryValues.push(maxEmployees);
+      whereExpressions.push(`num_employees <= $${queryValues.length}`);
+    }
+
+    // if there are any filters, add to query
+    if (whereExpressions.length > 0) {
+      query += " WHERE " + whereExpressions.join(" AND ");
+    }
+
+    // add order by clause to query
+    query += " ORDER BY name";
+    // run query and return results
+    const companiesRes = await db.query(query, queryValues);
+    return companiesRes.rows;
+  }
 }
 
 

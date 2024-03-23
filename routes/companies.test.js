@@ -108,6 +108,46 @@ describe("GET /companies", function () {
   });
 });
 
+/************************************** GET /companies with filters*/
+
+describe("GET /companies with filters", function () {
+  test("filters work", async function () {
+    const resp = await request(app).get("/companies?minEmployees=2&name=c");
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            },
+            {
+              handle: "c3",
+              name: "C3",
+              description: "Desc3",
+              numEmployees: 3,
+              logoUrl: "http://c3.img",
+            },
+          ],
+    });
+  });
+
+  test("fails: minEmployees or maxEmployees was passed NaN", async function () {
+    // get a 400 err by passing a string instead of a number
+    const resp = await request(app).get("/companies?minEmployees=two");
+    expect(resp.statusCode).toEqual(400);
+  });
+
+  test("fails: minEmployees > maxEmployees", async function () {
+    // get a 400 err by passing a minEmployees > maxEmployees
+    const resp = await request(app).get("/companies?minEmployees=3&maxEmployees=2");
+    console.log(resp.body);
+    expect(resp.statusCode).toEqual(400);
+  });
+});
+
 /************************************** GET /companies/:handle */
 
 describe("GET /companies/:handle", function () {
