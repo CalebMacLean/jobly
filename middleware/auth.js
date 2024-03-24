@@ -58,8 +58,47 @@ function ensureAdmin(req, res, next) {
     return next(err);
   }
 }
+
+/** Middleware: Requires user matches target user for data modification.
+ * 
+ * If not the correct user, raises Unauthorized.
+ */
+function ensureCorrectUser(req, res, next) {
+  try {
+    const user = res.locals.user;
+    // if user is and is an admin, return next
+    if(user && (user.isAdmin || user.username === req.params.username)) return next();
+
+    // otherwise, throw an unauthorized error
+    throw new UnauthorizedError();
+
+  } catch (err) {
+    return next(err);
+  }
+}
+
+/** Middleware: Requires user is an admin or matches user for data modification.
+ * 
+ * If not the correct user, raises Unauthorized.
+ */
+function ensureAdminOrCorrectUser(req, res, next) {
+  try {
+    const user = res.locals.user;
+    // if user is and is an admin, return next
+    if(user && (user.isAdmin || user.username === req.params.username)) return next();
+
+    // otherwise, throw an unauthorized error
+    throw new UnauthorizedError();
+
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
   ensureAdmin,
+  ensureCorrectUser,
+  ensureAdminOrCorrectUser
 };
