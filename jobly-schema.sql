@@ -16,6 +16,7 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- NUMERIC is used instead of FLOAT or DECIMAL to avoid floating point errors
 CREATE TABLE jobs (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
