@@ -204,6 +204,52 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
+
+  /** Apply to job: update db, returns undefined.
+   *
+   * - username: username applying to job
+   * - jobId: job id
+   **/
+  static async applyToJob(username, jobId) {
+    const preCheck = await db.query(
+      `SELECT username
+      FROM users
+      WHERE username = $1`,
+      [username]
+    );
+
+    if (!preCheck.rows[0]) throw new NotFoundError(`No user: ${username}`);
+
+    const preCheck2 = await db.query(
+      `SELECT id
+      FROM jobs
+      WHERE id = $1`,
+      [jobId]
+    );
+
+    if (!preCheck2.rows[0]) throw new NotFoundError(`No job: ${jobId}`);
+
+    const preCheck3 = await db.query(
+      `SELECT username, job_id
+      FROM applications
+      WHERE username = $1 AND job_id = $2`,
+      [username, jobId]
+    );
+
+    if (preCheck3.rows[0]) throw new BadRequestError(`User ${username} has already applied to job ${jobId}`);
+
+    const result = await db.query(
+      `INSERT INTO applications
+      (username, job_id)
+      VALUES ($1, $2)
+      RETURNING username, job_id`,
+      [username, jobId]
+    );
+
+    const application = result.rows[0];
+
+    return application;
+  }
 }
 
 

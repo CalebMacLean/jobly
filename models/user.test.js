@@ -230,3 +230,14 @@ describe("remove", function () {
     }
   });
 });
+
+/************************************** applyToJob */
+
+describe("applyToJob", function () {
+  test("works", async function () {
+    await User.applyToJob("u1", 1);
+    const res = await db.query(
+        `SELECT * FROM applications WHERE job_id=1 AND username='u1'`);
+    expect(res.rows.length).toEqual(1);
+  });
+});
