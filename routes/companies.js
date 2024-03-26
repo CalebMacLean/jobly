@@ -31,7 +31,6 @@ router.post("/", ensureAdmin, async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-
     const company = await Company.create(req.body);
     return res.status(201).json({ company });
   } catch (err) {
