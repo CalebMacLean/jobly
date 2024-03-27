@@ -242,7 +242,7 @@ class User {
       `INSERT INTO applications
       (username, job_id)
       VALUES ($1, $2)
-      RETURNING username, job_id`,
+      RETURNING username, job_id AS "jobId"`,
       [username, jobId]
     );
 
