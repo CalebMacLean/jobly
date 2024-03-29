@@ -172,6 +172,7 @@ describe("GET /users", function () {
           lastName: "U1L",
           email: "user1@user.com",
           isAdmin: false,
+          jobs: [1]
         },
         {
           username: "u2",
@@ -179,6 +180,7 @@ describe("GET /users", function () {
           lastName: "U2L",
           email: "user2@user.com",
           isAdmin: false,
+          jobs: [2]
         },
         {
           username: "u3",
@@ -186,6 +188,7 @@ describe("GET /users", function () {
           lastName: "U3L",
           email: "user3@user.com",
           isAdmin: false,
+          jobs: [3]
         },
       ],
     });
@@ -230,6 +233,7 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        jobs: [1]
       },
     });
   });
@@ -238,6 +242,7 @@ describe("GET /users/:username", function () {
     const resp = await request(app)
         .get(`/users/u1`)
         .set("authorization", `Bearer ${adminToken}`);
+    console.group("resp_body: ",resp.body);
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -245,6 +250,7 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        jobs: [1]
       },
     });
   });

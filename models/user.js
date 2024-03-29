@@ -107,11 +107,12 @@ class User {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
-                  is_admin AS "isAdmin"
+                  is_admin AS "isAdmin",
+                  (SELECT ARRAY_AGG(job_id) FROM applications WHERE username = users.username) AS jobs
            FROM users
            ORDER BY username`,
     );
-
+    console.log(result.rows[0]);
     return result.rows;
   }
 
@@ -125,19 +126,22 @@ class User {
 
   static async get(username) {
     const userRes = await db.query(
-          `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
-        [username],
+      `SELECT u.username,
+        u.first_name AS "firstName",
+        u.last_name AS "lastName",
+        u.email,
+        u.is_admin AS "isAdmin",
+        array_agg(a.job_id) AS "jobs"
+      FROM users u
+      LEFT JOIN applications a ON u.username = a.username
+      WHERE u.username = $1
+      GROUP BY u.username, u.first_name, u.last_name, u.email, u.is_admin`,
+      [username],
     );
-
+    console.log("USER.get RES", userRes);
     const user = userRes.rows[0];
-
     if (!user) throw new NotFoundError(`No user: ${username}`);
+    
 
     return user;
   }

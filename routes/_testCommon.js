@@ -13,7 +13,9 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM jobs");
-  // Reset the primary key sequences
+  // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM applications");
+  // Reset the primary key sequences for jobs table
   await db.query("Alter SEQUENCE jobs_id_seq RESTART WITH 1");
   
   await Company.create(
@@ -83,6 +85,10 @@ async function commonBeforeAll() {
     equity: "0.3",
     companyHandle: "c3",
   });
+  await db.query(`
+    INSERT INTO applications (username, job_id)
+    VALUES ('u1', 1), ('u2', 2), ('u3', 3)
+  `);
 }
 
 async function commonBeforeEach() {
